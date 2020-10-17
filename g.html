@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+<style>
+    ul {
+        overflow: hidden;
+    }
+    ul li{
+        float: left;
+        list-style:none;
+        margin-left: 20px;
+        width: 50px;
+    }
+    ol {
+        overflow: hidden;
+    }
+    ol li{
+        float: left;
+        list-style:none;
+        margin-left: 20px;
+        width: 30px;
+        display: none;
+    }
+    .liveactive {
+        background: palevioletred;
+        opacity: .5;
+    }
+</style>
+</head>
+<body>
+<div id="tab">
+    <ul>
+        <li><span>1</span><span class="dele">删除</span></li>
+        <li><span>2</span><span class="dele">删除</span></li>
+        <li><span>3</span><span class="dele">删除</span></li>
+        <li><span>4</span><span class="dele">删除</span></li>
+        <li><span>5</span><span class="dele">删除</span></li>
+        <button class="add">+</button>
+    </ul>
+    <ol>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+    </ol>
+</div>
+<script>
+    var that;
+    var yes=true;
+    class Father{
+        constructor(id) {
+            that=this;
+            this.main = document.querySelector(id);
+            this.ul = this.main.querySelector('ul');
+            this.ol = this.main.querySelector('ol');
+            this.add=this.main.querySelector('button');
+            this.dele=this.main.querySelectorAll('.dele');
+            this.method();
+            this.init();
+        }
+        method() {
+            this.add.onclick=this.addTab;
+        }
+        init() {
+            this.update();
+            for (var i=0;i<this.lis.length;i++) {
+                this.lis[i].index=i;this.ollis[i].index=i;
+                this.lis[i].onclick=this.toggleTab;
+                this.dele[i].onclick=this.removeTab;
+                this.span[i].ondblclick=this.editTab;
+                this.ollis[i].ondblclick=this.editTab;
+            }
+        }
+        update(){
+            this.lis = this.main.querySelectorAll('ul li');
+            this.ollis=this.main.querySelectorAll('ol li');
+            this.dele=this.main.querySelectorAll('.dele');
+            this.span=this.main.querySelectorAll('ul li span:first-child');
+            console.log(this.span);
+        }
+        toggleTab() {
+            that.clear();
+            this.className='liveactive';
+            that.ollis[this.index].style.display="block"
+        }
+        addTab() {
+            var ulli="<li>"+(parseInt(that.lis.length)+1)+"<span class='dele'>删除</span></li>";
+            var ollo="<li>"+(Math.random().toFixed(2))+"</li>";
+            that.ul.insertAdjacentHTML("beforeend",ulli);
+            that.ol.insertAdjacentHTML("beforeend",ollo);
+            that.init();
+        }
+        removeTab(e) {
+            e.stopPropagation();
+            console.log(this.parentNode.index);
+            that.lis[this.parentNode.index].remove();
+            that.ollis[this.parentNode.index].remove();
+            if (this.parentNode.index !== 0) {
+                if(document.querySelector('.liveactive')) return;
+                that.clear();
+                that.lis[this.parentNode.index-1].className='liveactive';
+                that.ollis[this.parentNode.index-1].style.display='block';
+            }
+            that.init()
+        }
+        editTab() {
+            window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+            if(yes){
+                var str = this.innerHTML;
+                this.innerHTML = '<input type="text" style="width: 30px"/>';
+                var input = this.children[0]
+                input.value = str
+                input.select();
+                yes=false
+                input.onblur =function () {
+                    this.parentNode.innerText =this.value;
+                    yes=true;
+                }
+                input.onkeyup =function (e) {
+                    if(e.keyCode === 13) {
+                        this.blur();
+                    }
+                }
+            }
+        }
+        clear() {
+            for(var i=0;i<that.lis.length;i++) {
+                that.lis[i].className='none';
+                that.ollis[i].style.display='none';
+            }
+        }
+
+    }
+   new Father('#tab');
+</script>
+</body>
+</html>
